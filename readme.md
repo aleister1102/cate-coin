@@ -21,6 +21,6 @@ Code các thuật toán rất phức tạp, nên mong mọi người đọc kỹ
 	- https://blog.boot.dev/cryptography/how-sha-2-works-step-by-step-sha-256/
 	- Mọi người có thể tìm thêm nếu thích 😉.
 - Các phần cần code:
-	1. Padding thông điệp các thành khối 512 bit.
+	1. Padding thông điệp thành các khối 512 bit.
 	2. Các vòng lặp biến đổi.
 - Code trong file `SHA256.h`, `SHA256.cpp` và `main.cpp`. Các file khác không cần quan tâm.
