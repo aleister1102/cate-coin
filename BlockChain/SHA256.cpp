@@ -51,7 +51,7 @@ string SHA256::hash(string input)
 	};
 
         //Seperate into blocks
-	for (int i = 0; i < message.size(); i += 64)
+	for (int i = 0; i < input.size(); i += 64)
 	{
 		//16 32-bit words are extended to 80 32-bit words
 		// 0-15 words dont change
@@ -61,9 +61,9 @@ string SHA256::hash(string input)
 			uint32_t temp = 0;
 			for (int k = 0; k < 4; k++)
 			{
-				if ((i + (4 * j) + k) <= message.size())
+				if ((i + (4 * j) + k) <= input.size())
 				{
-					temp += ((unsigned char)(message[i + (4 * j) + k])) << (24 - 8 * k);
+					temp += ((unsigned char)(input[i + (4 * j) + k])) << (24 - 8 * k);
 				}
 				else break;
 			}
