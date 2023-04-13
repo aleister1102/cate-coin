@@ -15,12 +15,6 @@ Code các thuật toán rất phức tạp, nên mong mọi người đọc kỹ
 - Push lên branch riêng, sau đó tạo pull request.
 - Cú pháp đặt tên branch `<tên developer>/<tên chức năng chính>`.
 
-## Tuần 1
-- Cài đặt thuật toán SHA256: có thể tùy ý thiết kế lớp, phương thức, ... Mục đích của chúng ta là xây dựng phương thức `string SHA256::hash (string)` để hash một chuỗi bất kỳ.
-- Tài liệu tham khảo:
-	- https://blog.boot.dev/cryptography/how-sha-2-works-step-by-step-sha-256/
-	- Mọi người có thể tìm thêm nếu thích 😉.
-- Các phần cần code:
-	1. Padding thông điệp thành các khối 512 bit.
-	2. Các vòng lặp biến đổi.
-- Code trong file `SHA256.h`, `SHA256.cpp` và `main.cpp`. Các file khác không cần quan tâm.
+## Chức năng
+- [ ] Đăng nhập
+- [ ] Chuyển tiền
