@@ -2,9 +2,15 @@
 
 Code các thuật toán rất phức tạp, nên mong mọi người đọc kỹ hướng dẫn dưới đây trước khi làm để quá trình code dễ dàng hơn.
 ## Quy ước lập trình 😎
+C++:
 - Tên biến, tên hàm, tên phương thức dùng camelCase.
 - Tên class, tên struct dùng PascalCase.
 - Tên file của class dùng PascalCase.
+
+Python:
+- Tên biến, tên hàm, tên phương thức: snake_case
+- Tên class: PascalCase
+- Tên file dùng snake_case
 
 ## Quản lý mã nguồn 🗃️
 - Cú pháp tiêu đề của commit:
