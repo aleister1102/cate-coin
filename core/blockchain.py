@@ -1,29 +1,17 @@
 import json
 from datetime import datetime
 from utils import compute_hash
-from merkle_tree import MerkleTree
 
-class Transaction:
-    def __init__(self, from_address="", to_address="", amount=0):
-        self.from_address = from_address
-        self.to_address = to_address
-        self.amount = amount
-    
 class Block:
-    def __init__(self, transactions: list[Transaction]):
+    def __init__(self, transactions: list[dict]):
         self.prev_hash = ""
-        self.transactions = [json.dumps(transaction.__dict__) for transaction in transactions]
+        self.transactions = json.dumps(transactions)
         self.nonce = 0
         self.hash = ""
         self.total_time = 0
 
-    def get_transactions(self) -> str:
-        return ", ".join(self.transactions)
-
     def get_hash(self) -> str:
-        merkle_tree = MerkleTree(self.transactions)
-        merkle_root = merkle_tree.root.hash
-        payload = self.prev_hash + merkle_root + str(self.nonce)
+        payload = self.prev_hash + self.transactions + str(self.nonce)
         return compute_hash(payload)
 
 
@@ -32,7 +20,7 @@ class Blockchain:
         self.chain: list[Block] = []
         self.difficulty = 4
 
-        block = Block([Transaction()])
+        block = Block("Genesis Block")
         block.hash = block.get_hash()
 
         self.chain.append(block)
@@ -45,8 +33,8 @@ class Blockchain:
         end = datetime.now()
         block.total_time = str(end - start)
 
-    def add(self, value: list[Transaction]):
-        block = Block(value)
+    def add(self, transactions: list[dict]):
+        block = Block(transactions)
         block.prev_hash = self.chain[-1].hash
         block.hash = block.get_hash()
         self.find_nonce(block)
@@ -71,7 +59,7 @@ class Blockchain:
     def print(self):
         for block in self.chain:
             print("Previous hash:", block.prev_hash)
-            print("Transactions: ", block.get_transactions())
+            print("Transactions: ", block.transactions)
             print("Nonce: ", block.nonce)
             print("Hash: ", block.hash)
             print("Total time: ", block.total_time)
@@ -80,14 +68,9 @@ class Blockchain:
 
 if __name__ == '__main__':
     transactions = [
-        Transaction("A", "B", 1),
-        Transaction("B", "C", 2),
-        Transaction("C", "D", 3),
-    ]
-    transactions = [
-        Transaction("A", "B", 1),
-        Transaction("B", "C", 2),
-        Transaction("C", "D", 3),
+        {"from": "Alice", "to": "Bob", "amount": 1},
+        {"from": "Bob", "to": "Charlie", "amount": 2},
+        {"from": "Charlie", "to": "Dave", "amount": 3},
     ]
     blockchain = Blockchain()
     blockchain.add(transactions)
