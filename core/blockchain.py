@@ -1,8 +1,26 @@
-import json
 from datetime import datetime
 from utils import hash
 from pymerkle import MerkleTree
 
+
+class Transaction:
+    def __init__(self, sender: str, receiver: str, amount: int) -> None:
+        self.sender: str = sender
+        self.receiver: str = receiver
+        self.amount: int = amount
+
+    def __str__(self):
+        return f'{self.sender} -> {self.receiver} : {self.amount}'
+
+    @staticmethod
+    def to_str_list(transactions) -> list[str]:
+        return [transaction.__str__() for transaction in transactions]
+
+    @staticmethod
+    def from_string(string: str):
+        sender, receiver = string.split(' -> ')
+        amount = int(receiver.split(' : ')[1])
+        return Transaction(sender, receiver, amount)
 
 class Block:
     def __init__(self, transactions: list[str] = []):
@@ -10,82 +28,87 @@ class Block:
         self.transactions: list[str] = transactions
 
         # Header
-        self.index: int = 0
+        self.previous_hash: str = ""
         self.merkle_root_hash = self.compute_merkle_root()
         self.timestamp: str = str(datetime.now())
         self.target: int = 4
         self.nonce: int = 0
-        self.prev_hash: str = ""
+
+        # Hash
+        self.hash: str = ""
+
+    def print(self) -> None:
+        border = "+--------------------------------------------------------------------------------------+"
+        padding = len(border) - 1
+        print(border)
+        print(f"|Previous hash: {self.previous_hash}".ljust(padding, " ") + "|")
+        print(f"|Merkle root hash:  {self.merkle_root_hash}".ljust(padding, " ") + "|")
+        print(f"|Timestamp:  {self.timestamp}".ljust(padding, " ") + "|")
+        print(f"|Nonce:  {self.nonce}".ljust(padding, " ") + "|")
+        print(f"|Hash:  {self.hash}".ljust(padding, " ") + "|")
+        print(border)
+        print(f"|Transactions:  {self.transactions}".ljust(padding, " ") + "|")
+        print(border)
+        print()
 
     def compute_merkle_root(self) -> str:
         tree = MerkleTree()
         for transaction in self.transactions:
             tree.append_entry(transaction)
-        return tree.root.hex() if tree.root else "0"
+        return tree.root.decode() if tree.root else ""
 
-    def print(self) -> None:
-        print("Transactions: ", self.transactions)
-        print("Merkle root hash: ", self.merkle_root_hash)
-        print("Timestamp: ", self.timestamp)
-        print("Nonce: ", self.nonce)
-        print("Previous hash:", self.prev_hash)
-        print()
-
-    @staticmethod
-    def compute_hash(block) -> str:
-        payload = block.prev_hash + block.merkle_root_hash + block.timestamp + str(block.nonce)
+    def compute_hash(self) -> str:
+        payload = self.previous_hash + self.merkle_root_hash + self.timestamp + str(self.nonce)
         return hash(payload)
 
 
 class Blockchain:
     def __init__(self):
         self.chain: list[Block] = []
-        self.target: int = 4
 
-        block = Block("Genesis Block")
-        block.hash = block.compute_hash()
+        genesis_block = Block("Genesis Block")
+        genesis_block.hash = Block.compute_hash(genesis_block)
+        self.chain.append(genesis_block)
 
-        self.chain.append(block)
+    def get_latest_block(self) -> Block:
+        return self.chain[-1]
 
-    def create_block(self, proof, prev_hash):
-        block = Block()
-
-    def proof_of_work(self, block: Block):
-        start = datetime.now()
-        while block.hash.startswith(self.difficulty * "0") == False:
+    def proof_of_work(self, block: Block) -> str:
+        hash = block.compute_hash()
+        while hash.startswith(block.target * "0") is False:
             block.nonce += 1
-            block.hash = block.compute_hash()
-        end = datetime.now()
-        block.total_time = str(end - start)
+            hash = block.compute_hash()
+        return hash
 
-    def add(self, transactions: list[dict]):
+    def add_block(self, transactions: list[str] = []):
         block = Block(transactions)
-        block.prev_hash = self.chain[-1].hash
-        block.hash = block.compute_hash()
-        self.proof_of_work(block)
+        block.previous_hash = self.get_latest_block().hash
+        block.hash = self.proof_of_work(block)
         self.chain.append(block)
 
     def print(self):
-        for block in self.chain:
-            print("Hash: ", block.hash)
-            print("Previous hash:", block.prev_hash)
-            print("Transactions: ", block.transactions)
-            print("Nonce: ", block.nonce)
-            print("Total time: ", block.total_time)
-            print()
+        for block in self.chain: 
+            block.print()
 
     def is_valid(self):
         for i in range(1, len(self.chain)):
             current_block = self.chain[i]
             prev_block = self.chain[i - 1]
 
+            if current_block.previous_hash != prev_block.hash:
+                print("Previous hash is not equal to the hash of the previous block")
+                return False
+
+            if current_block.merkle_root_hash != current_block.compute_merkle_root():
+                print("Merkle root hash is not equal to the computed merkle root hash")
+                return False
+
             if current_block.hash != current_block.compute_hash():
+                print("Hash is not equal to the computed hash")
                 return False
 
-            if current_block.prev_hash != prev_block.hash:
-                return False
-
-            if current_block.hash.startswith(self.difficulty * "0") == False:
+            if current_block.hash.startswith(current_block.target * "0") == False:
+                print("Hash does not meet the difficulty target")
                 return False
 
         return True
@@ -96,33 +119,37 @@ class Blockchain:
             if type(block.transactions) is not list:
                 continue
             for transaction in block.transactions:
-                if transaction["from"] == person:
-                    balance -= transaction["amount"]
-                if transaction["to"] == person:
-                    balance += transaction["amount"]
+                transaction = Transaction.from_string(transaction)
+                if transaction.sender == person:
+                    balance -= transaction.amount
+                if transaction.receiver == person:
+                    balance += transaction.amount
         return balance
 
 
 if __name__ == '__main__':
-    block = Block()
-    block.print()
-    print(Block.compute_hash(block))
-    # blockchain = Blockchain()
-    # blockchain.add([
-    #     {"from": "Alice", "to": "Bob", "amount": 1},
-    #     {"from": "Bob", "to": "Charlie", "amount": 2},
-    #     {"from": "Charlie", "to": "Dave", "amount": 3},
-    # ])
-    # blockchain.add([
-    #     {"from": "Charlie", "to": "Bob", "amount": 5},
-    #     {"from": "Bob", "to": "Charlie", "amount": 3},
-    #     {"from": "Charlie", "to": "Alice", "amount": 4},
-    # ])
-    # blockchain.print()
+    blockchain = Blockchain()
+    transactions = Transaction.to_str_list([
+        Transaction("Alice", "Bob", 100),
+        Transaction("Bob", "Charlie", 40),
+        Transaction("Charlie", "Alice", 20),
+        Transaction("Bob", "Alice", 30),
+        Transaction("Charlie", "Bob", 50),
+        Transaction("Alice", "Charlie", 10),
+    ])
+    blockchain.add_block(transactions)
+    blockchain.print()
 
-    # print(f'Validity of the blockchain: ', blockchain.is_valid())
+    # print('Tamper the second block')
+    # blockchain.chain[1].transactions = "transaction4"
+    # blockchain.chain[1].merkle_root_hash = blockchain.chain[1].compute_merkle_root()
+    # blockchain.chain[1].hash = blockchain.proof_of_work(blockchain.chain[1])
+    # blockchain.chain[2].previous_hash = blockchain.chain[1].hash
+    # blockchain.chain[2].hash = blockchain.proof_of_work(blockchain.chain[2])
     # print()
 
-    # print(f'Balance of Alice: {blockchain.get_balance("Alice")}')
-    # print(f'Balance of Bob: {blockchain.get_balance("Bob")}')
-    # print(f'Balance of Charlie: {blockchain.get_balance("Charlie")}')
+    print(f'Validity of the blockchain: ', blockchain.is_valid())
+
+    print(f'Balance of Alice: {blockchain.get_balance("Alice")}')
+    print(f'Balance of Bob: {blockchain.get_balance("Bob")}')
+    print(f'Balance of Charlie: {blockchain.get_balance("Charlie")}')
