@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from cryptography import hash, merkle_root
 
@@ -8,17 +9,10 @@ class Transaction:
         self.receiver: str = receiver
         self.amount: int = amount
         self.change: int = change
-        self.content: str = ""
-        self.generate_content()
-    
-    def generate_content(self):
-        self.content = f'{self.receiver} <- {self.amount}'
-        if self.change > 0:
-            self.content += f', {self.sender} <- {self.change}'
-
-    @staticmethod
-    def to_string(transactions: list) -> str:
-        return '\n'.join([transaction.content for transaction in transactions])
+        self.content: str = self.to_string()
+        
+    def to_string(self) -> str:
+        return f'{self.receiver} -> {self.sender}: {self.amount}, change: {self.change}'
 
 class Block:
     def __init__(self, transactions: list[Transaction] = []):
@@ -35,14 +29,18 @@ class Block:
         # Hash
         self.hash: str = ""
 
-    def print(self) -> None:
-        print(f"Previous hash: {self.previous_hash}")
-        print(f"Merkle root hash: {self.merkle_root_hash}")
-        print(f"Timestamp: {self.timestamp}")
-        print(f"Nonce: {self.nonce}")
-        print(f"Hash: {self.hash}")
-        print(f"Transactions: \n{Transaction.to_string(self.transactions)}")
-        print()
+    def to_dict(self) -> dict:
+        return {
+            "previous_hash": self.previous_hash,
+            "merkle_root_hash": self.merkle_root_hash,
+            "timestamp": self.timestamp,
+            "nonce": self.nonce,
+            "hash": self.hash,
+            "transactions": [transaction.content for transaction in self.transactions]
+        }
+    
+    def to_string(self) -> str:
+        return json.dumps(self.to_dict(), indent=4)
 
     def compute_merkle_root(self) -> str:
         transactions = map(lambda transaction: transaction.content, self.transactions)
@@ -62,8 +60,11 @@ class Blockchain:
         genesis_block.hash = Block.compute_hash(genesis_block)
         self.chain.append(genesis_block)
 
+    def add_transaction(self, transaction: Transaction) -> None:
+        self.transactions_queue.append(transaction)
+
     def add_transactions(self, transactions: list[Transaction]) -> None:
-        self.transactions_queue += transactions
+        self.transactions_queue.extend(transactions)
 
     def get_transactions(self) -> list[Transaction]:
         return self.transactions_queue
@@ -95,7 +96,8 @@ class Blockchain:
 
     def print(self):
         for block in self.chain: 
-            block.print()
+            print(block.to_string())
+            print()
 
     def is_valid(self):
         for i in range(1, len(self.chain)):
