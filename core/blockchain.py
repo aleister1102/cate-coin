@@ -9,7 +9,6 @@ class Transaction:
         self.receiver: str = receiver
         self.amount: int = amount
         self.change: int = change
-        self.content: str = self.to_string()
         
     def to_string(self) -> str:
         return f'{self.sender} -> {self.receiver}: {self.amount}, change: {self.change}'
@@ -36,14 +35,14 @@ class Block:
             "timestamp": self.timestamp,
             "nonce": self.nonce,
             "hash": self.hash,
-            "transactions": [transaction.content for transaction in self.transactions]
+            "transactions": [transaction.to_string() for transaction in self.transactions]
         }
     
     def to_string(self) -> str:
         return json.dumps(self.to_dict(), indent=4)
 
     def compute_merkle_root(self) -> str:
-        transactions = map(lambda transaction: transaction.content, self.transactions)
+        transactions = map(lambda transaction: transaction.to_string(), self.transactions)
         return merkle_root(transactions)
        
     def compute_hash(self) -> str:
@@ -103,28 +102,24 @@ class Blockchain:
             print(block.to_string())
             print()
 
-    def is_valid(self):
+    def is_valid(self) -> tuple[str, bool]:
         for i in range(1, len(self.chain)):
             current_block = self.chain[i]
             prev_block = self.chain[i - 1]
 
             if current_block.previous_hash != prev_block.hash:
-                print("Previous hash is not equal to the hash of the previous block")
-                return False
+                return "Previous hash is not equal to the hash of the previous block", False
 
             if current_block.merkle_root_hash != current_block.compute_merkle_root():
-                print("Merkle root hash is not equal to the computed merkle root hash")
-                return False
+                return "Merkle root hash is not equal to the computed merkle root hash", False
 
             if current_block.hash != current_block.compute_hash():
-                print("Hash is not equal to the computed hash")
-                return False
+                return "Hash is not equal to the computed hash", False
 
             if current_block.hash.startswith(current_block.target * "0") == False:
-                print("Hash does not meet the difficulty target")
-                return False
+                return "Hash does not meet the difficulty target", False
 
-        return True
+        return "", True
 
     def get_balance(self, person: str) -> int:
         balance = 0
@@ -167,6 +162,10 @@ if __name__ == '__main__':
 
     # Print blockchain
     blockchain.print()
+
+    # Tamper the blockchain
+    blockchain.chain[1].transactions[0].amount = 1000
+    blockchain.print()
     
     # Check validity
-    print(f'Validity of the blockchain: ', blockchain.is_valid())
+    print(f'Validity of the blockchain: ', blockchain.is_valid()[1])

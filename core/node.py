@@ -20,8 +20,8 @@ def handle_get_chain():
     return jsonify(response), 200
 
 @app.route('/add-transactions', methods=['POST'])
-def handle_add_transaction():
-    transactions = request.json['transactions'] if 'transactions' in request.json else []
+def handle_add_transactions():
+    transactions: list[dict] = request.json['transactions'] if 'transactions' in request.json else []
     transaction_keys = ["sender", "receiver", "amount", "change"]
     
     if len(transactions)  == 0:
@@ -54,7 +54,20 @@ def handle_mine_block():
         return jsonify(response), 200
     else:
         return jsonify(response), 400
-    
+
+@app.route('/is-valid', methods=['GET'])
+def handle_is_valid():
+    error, validity = blockchain.is_valid()
+    response = {
+        "message": "The blockchain is valid" if validity else "The blockchain is not valid",
+    }
+
+    if error == '':
+        return jsonify(response), 200   
+    else:
+        response['error'] = error
+        return jsonify(response), 400
+        
 
 if __name__ == '__main__':
     CORS(app)
