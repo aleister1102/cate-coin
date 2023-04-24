@@ -4,15 +4,16 @@ from pymerkle import MerkleTree
 
 
 class Transaction:
-    def __init__(self, sender: str, receiver: str, amount: int) -> None:
+    def __init__(self, sender: str, receiver: str, amount: int, change: int) -> None:
         self.sender: str = sender
         self.receiver: str = receiver
         self.amount: int = amount
-        self.content: str = f'{self.sender} -> {self.receiver}: {self.amount}'
+        self.change: int = change
+        self.content: str = f'{self.receiver}: {self.amount}, {self.sender}: {self.change}'
     
     @staticmethod
     def to_string(transactions: list) -> str:
-        return ', '.join([transaction.content for transaction in transactions])
+        return '; '.join([transaction.content for transaction in transactions])
 
 class Block:
     def __init__(self, transactions: list[Transaction] = []):
@@ -28,6 +29,7 @@ class Block:
 
         # Hash
         self.hash: str = ""
+        self.block_capacity = 4
 
     def print(self) -> None:
         border = "+--------------------------------------------------------------------------------------+"
@@ -112,23 +114,23 @@ class Blockchain:
                 continue
             for transaction in block.transactions:
                 if transaction.sender == person:
-                    balance -= transaction.amount
+                    balance -= (transaction.amount - transaction.change)
                 if transaction.receiver == person:
-                    balance += transaction.amount
+                    balance += (transaction.amount - transaction.change)
         return balance
 
 
 if __name__ == '__main__':
     blockchain = Blockchain()
     blockchain.add_block([
-        Transaction("Alice", "Bob", 100),
-        Transaction("Bob", "Charlie", 40),
-        Transaction("Charlie", "Alice", 20)
+        Transaction("Alice", "Bob", 100, 30),
+        Transaction("Bob", "Charlie", 60, 20),
+        Transaction("Charlie", "Alice", 50, 10)
     ])
     blockchain.add_block([
-        Transaction("Bob", "Alice", 30),
-        Transaction("Charlie", "Bob", 50),
-        Transaction("Alice", "Charlie", 10),
+        Transaction("Bob", "Alice", 30, 5),
+        Transaction("Alice", "Charlie", 40, 70),
+        Transaction("Charlie", "Bob", 55, 90),
     ])
     blockchain.print()
 
