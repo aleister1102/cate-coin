@@ -107,7 +107,7 @@ class Blockchain:
 
     def mine_block(self, miner: str) -> tuple[bool, str]:
         if len(self.transactions_queue) < self.block_capacity - 1:
-            return False, "Not enough transactions to mine a block"
+            return False, "Not enough transactions to mine a block 🥲"
 
         transactions: list[Transaction] = [
             Transaction("Owner", miner, self.get_current_reward())]  # rewarding for miner
@@ -115,7 +115,7 @@ class Blockchain:
             transactions.append(self.transactions_queue.pop(0))
         self.add_block(transactions)
 
-        return True, "Mine successfully"
+        return True, "Mine successfully 🤑"
 
     def print(self):
         for block in self.chain:

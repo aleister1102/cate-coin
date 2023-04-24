@@ -1,6 +1,5 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
-
 from blockchain import Blockchain, Transaction
 
 app = Flask(__name__)
@@ -9,12 +8,11 @@ blockchain = Blockchain()
 
 @app.route("/")
 def home_page():
-    # Write API document here
-    return "This is the homepage of the API"
+    return "This is the homepage of the API, write the document here 🤓!"
 
 
 @app.route('/get-chain', methods=['GET'])
-def handle_get_chain():
+def handle_get_chain() -> Response:
     response = {
         "chain": [block.to_dict() for block in blockchain.chain],
         "transactions_queue": [transaction.to_string() for transaction in blockchain.transactions_queue],
@@ -24,38 +22,43 @@ def handle_get_chain():
 
 
 @app.route('/add-transactions', methods=['POST'])
-def handle_add_transactions():
+def handle_add_transactions() -> Response:
     transactions: list[dict] = request.json['transactions'] if 'transactions' in request.json else []
-    transaction_keys = ["sender", "receiver", "amount", "change"]
-
-    if len(transactions) == 0:
-        return "No transactions found", 400
+    transactions_keys = ["sender", "receiver", "amount", "change"]
+    
+    num_of_transactions = len(transactions)
+    if num_of_transactions == 0:
+        return "No transactions found 😔", 400
+    else:
+        response = {
+            "message": f"{num_of_transactions} transactions will be added to the blockchain soon 😉"
+        }
 
     for transaction in transactions:
-        if not all(key in transaction for key in transaction_keys):
-            return f"Some elements of the transaction {transaction} are missing", 400
+        if not all(key in transaction for key in transactions_keys):
+            return f"Some elements of the transaction {transaction} are missing 🤨", 400
 
-        sender, receiver, amount, change = transaction['sender'], transaction[
-            'receiver'], transaction['amount'], transaction['change']
-        blockchain.add_transaction(Transaction(
-            sender, receiver, amount, change))
+        blockchain.add_transaction(
+            Transaction(
+                transaction['sender'],
+                transaction['receiver'],
+                transaction['amount'],
+                transaction['change']
+            )
+        )
 
-    response = {
-        "message": f"{len(transactions)} transactions will be added to the blockchain soon"
-    }
     return jsonify(response), 201
 
 
 @app.route('/mine-block', methods=['GET'])
-def handle_mine_block():
+def handle_mine_block() -> Response:
     miner = request.remote_addr
     mining_result, mining_message = blockchain.mine_block(miner)
-    latest_block = blockchain.get_latest_block()
 
-    response = {"message": mining_message}
+    response = { "message": mining_message }
 
     if mining_result is True:
-        response["block"] = latest_block.to_dict()
+        response["block"] = blockchain.get_latest_block().to_dict()
         return jsonify(response), 200
     else:
         return jsonify(response), 400
@@ -65,9 +68,7 @@ def handle_mine_block():
 def handle_is_valid():
     validity, error = blockchain.is_valid()
 
-    response = {
-        "message": "The blockchain is valid" if validity else "The blockchain is not valid"
-    }
+    response = { "message": "The blockchain is valid 😄" if validity else "The blockchain is not valid 😰" }
 
     if error is None:
         return jsonify(response), 200
