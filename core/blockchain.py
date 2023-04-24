@@ -8,24 +8,16 @@ class Transaction:
         self.sender: str = sender
         self.receiver: str = receiver
         self.amount: int = amount
-
-    def __str__(self):
-        return f'{self.sender} -> {self.receiver} : {self.amount}'
-
+        self.content: str = f'{self.sender} -> {self.receiver}: {self.amount}'
+    
     @staticmethod
-    def to_str_list(transactions) -> list[str]:
-        return [transaction.__str__() for transaction in transactions]
-
-    @staticmethod
-    def from_string(string: str):
-        sender, receiver = string.split(' -> ')
-        amount = int(receiver.split(' : ')[1])
-        return Transaction(sender, receiver, amount)
+    def to_string(transactions: list) -> str:
+        return ', '.join([transaction.content for transaction in transactions])
 
 class Block:
-    def __init__(self, transactions: list[str] = []):
+    def __init__(self, transactions: list[Transaction] = []):
         # Body
-        self.transactions: list[str] = transactions
+        self.transactions: list[Transaction] = transactions
 
         # Header
         self.previous_hash: str = ""
@@ -47,14 +39,14 @@ class Block:
         print(f"|Nonce:  {self.nonce}".ljust(padding, " ") + "|")
         print(f"|Hash:  {self.hash}".ljust(padding, " ") + "|")
         print(border)
-        print(f"|Transactions:  {self.transactions}".ljust(padding, " ") + "|")
+        print(f"|Transactions:  {Transaction.to_string(self.transactions)}".ljust(padding, " ") + "|")
         print(border)
         print()
 
     def compute_merkle_root(self) -> str:
         tree = MerkleTree()
         for transaction in self.transactions:
-            tree.append_entry(transaction)
+            tree.append_entry(transaction.content)
         return tree.root.decode() if tree.root else ""
 
     def compute_hash(self) -> str:
@@ -66,7 +58,7 @@ class Blockchain:
     def __init__(self):
         self.chain: list[Block] = []
 
-        genesis_block = Block("Genesis Block")
+        genesis_block = Block()
         genesis_block.hash = Block.compute_hash(genesis_block)
         self.chain.append(genesis_block)
 
@@ -80,7 +72,7 @@ class Blockchain:
             hash = block.compute_hash()
         return hash
 
-    def add_block(self, transactions: list[str] = []):
+    def add_block(self, transactions: list[Transaction] = []):
         block = Block(transactions)
         block.previous_hash = self.get_latest_block().hash
         block.hash = self.proof_of_work(block)
@@ -119,7 +111,6 @@ class Blockchain:
             if type(block.transactions) is not list:
                 continue
             for transaction in block.transactions:
-                transaction = Transaction.from_string(transaction)
                 if transaction.sender == person:
                     balance -= transaction.amount
                 if transaction.receiver == person:
@@ -129,15 +120,16 @@ class Blockchain:
 
 if __name__ == '__main__':
     blockchain = Blockchain()
-    transactions = Transaction.to_str_list([
+    blockchain.add_block([
         Transaction("Alice", "Bob", 100),
         Transaction("Bob", "Charlie", 40),
-        Transaction("Charlie", "Alice", 20),
+        Transaction("Charlie", "Alice", 20)
+    ])
+    blockchain.add_block([
         Transaction("Bob", "Alice", 30),
         Transaction("Charlie", "Bob", 50),
         Transaction("Alice", "Charlie", 10),
     ])
-    blockchain.add_block(transactions)
     blockchain.print()
 
     # print('Tamper the second block')
