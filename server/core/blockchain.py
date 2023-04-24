@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from cryptography import hash, merkle_root
+from core.cryptography import hash, merkle_root
 
 
 class Transaction:
@@ -95,7 +95,7 @@ class Blockchain:
         transactions.append(Transaction("Owner", miner, 10)) # Reward
 
         self.add_block(transactions)
-        return "Mine successful", True
+        return "Mine successfully", True
 
     def print(self):
         for block in self.chain: 
