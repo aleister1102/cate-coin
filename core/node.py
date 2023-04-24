@@ -19,21 +19,24 @@ def handle_get_chain():
     }
     return jsonify(response), 200
 
-@app.route('/add-transaction', methods=['POST'])
+@app.route('/add-transactions', methods=['POST'])
 def handle_add_transaction():
-    json = request.json
+    transactions = request.json['transactions'] if 'transactions' in request.json else []
     transaction_keys = ["sender", "receiver", "amount", "change"]
-
-    if not all(key in json for key in transaction_keys):
-        return "Some elements of the transaction are missing", 400
     
-    transaction = Transaction(json["sender"], json["receiver"], json["amount"], json["change"])
-    blockchain.add_transaction(transaction)
+    if len(transactions)  == 0:
+        return "No transactions found", 400
+
+    for transaction in transactions:
+        if not all(key in transaction for key in transaction_keys):
+            return f"Some elements of the transaction {transaction} are missing", 400
+        
+        sender, receiver, amount, change = transaction['sender'], transaction['receiver'], transaction['amount'], transaction['change']
+        blockchain.add_transaction(Transaction(sender, receiver, amount, change))
 
     response = {
-        "message": f"This transaction will be added to the blockchain soon"
+        "message": f"{len(transactions)} transactions will be added to the blockchain soon"
     }
-
     return jsonify(response), 201
 
 @app.route('/mine-block', methods=['GET'])
