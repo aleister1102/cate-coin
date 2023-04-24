@@ -29,7 +29,6 @@ class Block:
 
         # Hash
         self.hash: str = ""
-        self.block_capacity = 4
 
     def print(self) -> None:
         border = "+--------------------------------------------------------------------------------------+"
@@ -59,11 +58,16 @@ class Block:
 class Blockchain:
     def __init__(self):
         self.chain: list[Block] = []
+        self.transactions_queue: list[Transaction] = []
+        self.block_capacity: int = 3
 
         genesis_block = Block()
         genesis_block.hash = Block.compute_hash(genesis_block)
         self.chain.append(genesis_block)
 
+    def add_transactions(self, transactions: list[Transaction]) -> None:
+        self.transactions_queue += transactions
+    
     def get_latest_block(self) -> Block:
         return self.chain[-1]
 
@@ -74,11 +78,19 @@ class Blockchain:
             hash = block.compute_hash()
         return hash
 
-    def add_block(self, transactions: list[Transaction] = []):
+    def add_block(self, transactions: list[Transaction]) -> None:
         block = Block(transactions)
         block.previous_hash = self.get_latest_block().hash
         block.hash = self.proof_of_work(block)
+
         self.chain.append(block)
+     
+    def mine_block(self) -> None:
+        transactions: list[Transaction] = []
+        while len(transactions) < self.block_capacity and len(self.transactions_queue) > 0:
+            transactions.append(self.transactions_queue.pop(0))
+
+        self.add_block(transactions)
 
     def print(self):
         for block in self.chain: 
@@ -122,28 +134,21 @@ class Blockchain:
 
 if __name__ == '__main__':
     blockchain = Blockchain()
-    blockchain.add_block([
+    blockchain.add_transactions([
         Transaction("Alice", "Bob", 100, 30),
         Transaction("Bob", "Charlie", 60, 20),
         Transaction("Charlie", "Alice", 50, 10)
     ])
-    blockchain.add_block([
-        Transaction("Bob", "Alice", 30, 5),
-        Transaction("Alice", "Charlie", 40, 70),
-        Transaction("Charlie", "Bob", 55, 90),
-    ])
+    blockchain.add_transactions([Transaction("Alice", "Bob", 40, 60)])
+    blockchain.add_transactions([Transaction("Eve", "Bob", 60, 55)])
+    # blockchain.add_transactions([
+    #     Transaction("Bob", "Alice", 30, 5),
+    #     Transaction("Alice", "Charlie", 40, 70),
+    #     Transaction("Charlie", "Bob", 55, 90),
+    # ])
+    
+    blockchain.mine_block()
+    blockchain.mine_block()
     blockchain.print()
-
-    # print('Tamper the second block')
-    # blockchain.chain[1].transactions = "transaction4"
-    # blockchain.chain[1].merkle_root_hash = blockchain.chain[1].compute_merkle_root()
-    # blockchain.chain[1].hash = blockchain.proof_of_work(blockchain.chain[1])
-    # blockchain.chain[2].previous_hash = blockchain.chain[1].hash
-    # blockchain.chain[2].hash = blockchain.proof_of_work(blockchain.chain[2])
-    # print()
-
+    
     print(f'Validity of the blockchain: ', blockchain.is_valid())
-
-    print(f'Balance of Alice: {blockchain.get_balance("Alice")}')
-    print(f'Balance of Bob: {blockchain.get_balance("Bob")}')
-    print(f'Balance of Charlie: {blockchain.get_balance("Charlie")}')
