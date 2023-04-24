@@ -25,7 +25,7 @@ def handle_get_chain() -> Response:
 def handle_add_transactions() -> Response:
     transactions: list[dict] = request.json['transactions'] if 'transactions' in request.json else []
     transactions_keys = ["sender", "receiver", "amount", "change"]
-    
+
     num_of_transactions = len(transactions)
     if num_of_transactions == 0:
         return "No transactions found 😔", 400
@@ -55,7 +55,7 @@ def handle_mine_block() -> Response:
     miner = request.remote_addr
     mining_result, mining_message = blockchain.mine_block(miner)
 
-    response = { "message": mining_message }
+    response = {"message": mining_message}
 
     if mining_result is True:
         response["block"] = blockchain.get_latest_block().to_dict()
@@ -68,7 +68,8 @@ def handle_mine_block() -> Response:
 def handle_is_valid():
     validity, error = blockchain.is_valid()
 
-    response = { "message": "The blockchain is valid 😄" if validity else "The blockchain is not valid 😰" }
+    response = {
+        "message": "The blockchain is valid 😄" if validity else "The blockchain is not valid 😰"}
 
     if error is None:
         return jsonify(response), 200
