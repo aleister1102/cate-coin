@@ -1,5 +1,5 @@
 from datetime import datetime
-from utils import hash, merkle_root, KeyPairs, Signature
+from cryptography import hash, merkle_root
 
 
 class Transaction:
@@ -18,7 +18,7 @@ class Transaction:
 
     @staticmethod
     def to_string(transactions: list) -> str:
-        return ' || '.join([transaction.content for transaction in transactions])
+        return '\n'.join([transaction.content for transaction in transactions])
 
 class Block:
     def __init__(self, transactions: list[Transaction] = []):
@@ -36,17 +36,12 @@ class Block:
         self.hash: str = ""
 
     def print(self) -> None:
-        border = "+--------------------------------------------------------------------------------------------+"
-        padding = len(border) - 1
-        print(border)
-        print(f"|Previous hash: {self.previous_hash}".ljust(padding, " ") + "|")
-        print(f"|Merkle root hash:  {self.merkle_root_hash}".ljust(padding, " ") + "|")
-        print(f"|Timestamp:  {self.timestamp}".ljust(padding, " ") + "|")
-        print(f"|Nonce:  {self.nonce}".ljust(padding, " ") + "|")
-        print(f"|Hash:  {self.hash}".ljust(padding, " ") + "|")
-        print(border)
-        print(f"|Transactions:  {Transaction.to_string(self.transactions)}".ljust(padding, " ") + "|")
-        print(border)
+        print(f"Previous hash: {self.previous_hash}")
+        print(f"Merkle root hash: {self.merkle_root_hash}")
+        print(f"Timestamp: {self.timestamp}")
+        print(f"Nonce: {self.nonce}")
+        print(f"Hash: {self.hash}")
+        print(f"Transactions: \n{Transaction.to_string(self.transactions)}")
         print()
 
     def compute_merkle_root(self) -> str:
@@ -139,6 +134,7 @@ class Blockchain:
 
 
 if __name__ == '__main__':
+    # Initialize blockchain
     blockchain = Blockchain()
 
     # Add transactions

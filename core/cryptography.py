@@ -17,18 +17,21 @@ class KeyPairs:
     def __init__(self, signing_key: SigningKey, verifying_key: VerifyingKey) -> None:
         self.signing_key: SigningKey = signing_key
         self.verifying_key: VerifyingKey = verifying_key
-
-    def get_signing_key_hex(self) -> str:
-        return self.signing_key.to_string().hex()
-    
-    def get_verifying_key_hex(self) -> str:
-        return self.verifying_key.to_string().hex()
+        self.signing_key_hex = signing_key.to_string().hex()
+        self.verifying_key_hex = verifying_key.to_string().hex()
 
     def to_string(self) -> str:
-        return f'Signing key: {self.get_signing_key_hex()}\nVerifying key: {self.get_verifying_key_hex()}'
+        return f'Signing key: {self.signing_key_hex}\nVerifying key: {self.verifying_key_hex}'
 
+    @staticmethod
+    def to_signing_key(signing_key_hex: str) -> SigningKey:
+        return SigningKey.from_string(bytes.fromhex(signing_key_hex), curve=SECP256k1)
 
-class Signature:
+    @staticmethod
+    def to_verifying_key(verifying_key_hex: str) -> VerifyingKey:
+        return VerifyingKey.from_string(bytes.fromhex(verifying_key_hex), curve=SECP256k1)
+
+class DigitalSignature:
     @staticmethod
     def generate_signing_key() -> SigningKey:
         return SigningKey.generate(curve=SECP256k1)
@@ -39,29 +42,31 @@ class Signature:
 
     @staticmethod
     def generate_keys() -> KeyPairs:
-        signing_key = Signature.generate_signing_key()
-        verifying_key = Signature.generate_verifying_key(signing_key)
+        signing_key = DigitalSignature.generate_signing_key()
+        verifying_key = DigitalSignature.generate_verifying_key(signing_key)
         return KeyPairs(signing_key, verifying_key)
 
     @staticmethod
-    def sign(signing_key: SigningKey, message: str) -> str:
+    def sign(signing_key_hex: str, message: str) -> str:
+        signing_key = KeyPairs.to_signing_key(signing_key_hex)
         return signing_key.sign(hash(message)).hex()
     
     @staticmethod
-    def verify(verifying_key: VerifyingKey, signature: str, message: str) -> bool:
+    def verify(verifying_key_hex: str, signature: str, message: str) -> bool:
         try:
+            verifying_key = KeyPairs.to_verifying_key(verifying_key_hex)
             verifying_key.verify(bytes.fromhex(signature), hash(message))
             return True
         except:
             return False
         
 if __name__ == '__main__':
-    keys = Signature.generate_keys()
+    keys = DigitalSignature.generate_keys()
     print(keys.to_string())
 
     message = 'Hello world!'
-    signature = Signature.sign(keys.signing_key, message)
+    signature = DigitalSignature.sign(keys.signing_key_hex, message)
     print(f'Signature of {message}: {signature}')
 
-    print(f'Verification of {message}: {Signature.verify(keys.verifying_key, signature, message)}')
+    print(f'Verification of {message}: {DigitalSignature.verify(keys.verifying_key_hex, signature, message)}')
 
