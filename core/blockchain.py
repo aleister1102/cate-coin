@@ -4,16 +4,22 @@ from pymerkle import MerkleTree
 
 
 class Transaction:
-    def __init__(self, sender: str, receiver: str, amount: int, change: int) -> None:
+    def __init__(self, sender: str, receiver: str, amount: int, change: int = 0) -> None:
         self.sender: str = sender
         self.receiver: str = receiver
         self.amount: int = amount
         self.change: int = change
-        self.content: str = f'{self.receiver}: {self.amount}, {self.sender}: {self.change}'
+        self.content: str = ""
+        self.generate_content()
     
+    def generate_content(self):
+        self.content = f'{self.receiver} <- {self.amount}'
+        if self.change > 0:
+            self.content += f', {self.sender} <- {self.change}'
+
     @staticmethod
     def to_string(transactions: list) -> str:
-        return '; '.join([transaction.content for transaction in transactions])
+        return ' || '.join([transaction.content for transaction in transactions])
 
 class Block:
     def __init__(self, transactions: list[Transaction] = []):
@@ -31,7 +37,7 @@ class Block:
         self.hash: str = ""
 
     def print(self) -> None:
-        border = "+--------------------------------------------------------------------------------------+"
+        border = "+--------------------------------------------------------------------------------------------+"
         padding = len(border) - 1
         print(border)
         print(f"|Previous hash: {self.previous_hash}".ljust(padding, " ") + "|")
@@ -67,6 +73,9 @@ class Blockchain:
 
     def add_transactions(self, transactions: list[Transaction]) -> None:
         self.transactions_queue += transactions
+
+    def get_transactions(self) -> list[Transaction]:
+        return self.transactions_queue
     
     def get_latest_block(self) -> Block:
         return self.chain[-1]
@@ -85,10 +94,11 @@ class Blockchain:
 
         self.chain.append(block)
      
-    def mine_block(self) -> None:
+    def mine_block(self, miner: str) -> None:
         transactions: list[Transaction] = []
-        while len(transactions) < self.block_capacity and len(self.transactions_queue) > 0:
+        while len(transactions) < self.block_capacity - 1 and len(self.transactions_queue) > 0:
             transactions.append(self.transactions_queue.pop(0))
+        transactions.append(Transaction("Owner", miner, 10)) # Reward
 
         self.add_block(transactions)
 
@@ -134,21 +144,31 @@ class Blockchain:
 
 if __name__ == '__main__':
     blockchain = Blockchain()
+
+    # Add transactions
+    blockchain.add_transactions([
+        Transaction("Alice", "Bob", 40, 60)
+    ])
+    blockchain.add_transactions([
+        Transaction("Eve", "Bob", 60, 55)
+    ])
     blockchain.add_transactions([
         Transaction("Alice", "Bob", 100, 30),
         Transaction("Bob", "Charlie", 60, 20),
         Transaction("Charlie", "Alice", 50, 10)
     ])
-    blockchain.add_transactions([Transaction("Alice", "Bob", 40, 60)])
-    blockchain.add_transactions([Transaction("Eve", "Bob", 60, 55)])
-    # blockchain.add_transactions([
-    #     Transaction("Bob", "Alice", 30, 5),
-    #     Transaction("Alice", "Charlie", 40, 70),
-    #     Transaction("Charlie", "Bob", 55, 90),
-    # ])
-    
-    blockchain.mine_block()
-    blockchain.mine_block()
+    blockchain.add_transactions([
+        Transaction("Bob", "Alice", 30, 5),
+        Transaction("Alice", "Charlie", 40, 70),
+        Transaction("Charlie", "Bob", 55, 90),
+    ])
+
+    # Mine blocks
+    blockchain.mine_block("Aleister")
+    blockchain.mine_block("Injoker")
+
+    # Print blockchain
     blockchain.print()
     
+    # Check validity
     print(f'Validity of the blockchain: ', blockchain.is_valid())
