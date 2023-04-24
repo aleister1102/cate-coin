@@ -1,6 +1,5 @@
 from datetime import datetime
-from utils import hash
-from pymerkle import MerkleTree
+from utils import hash, merkle_root, KeyPairs, Signature
 
 
 class Transaction:
@@ -51,15 +50,12 @@ class Block:
         print()
 
     def compute_merkle_root(self) -> str:
-        tree = MerkleTree()
-        for transaction in self.transactions:
-            tree.append_entry(transaction.content)
-        return tree.root.decode() if tree.root else ""
-
+        transactions = map(lambda transaction: transaction.content, self.transactions)
+        return merkle_root(transactions)
+       
     def compute_hash(self) -> str:
         payload = self.previous_hash + self.merkle_root_hash + self.timestamp + str(self.nonce)
-        return hash(payload)
-
+        return hash(payload).hex()
 
 class Blockchain:
     def __init__(self):
