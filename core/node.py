@@ -11,7 +11,7 @@ def home_page():
     return "This is the homepage of the API"
 
 @app.route('/get-chain', methods=['GET'])
-def get_chain():
+def handle_get_chain():
     response = {
         "chain": [block.to_dict() for block in blockchain.chain],
         "transactions_queue": [transaction.to_string() for transaction in blockchain.transactions_queue],
@@ -20,7 +20,7 @@ def get_chain():
     return jsonify(response), 200
 
 @app.route('/add-transaction', methods=['POST'])
-def post_transaction():
+def handle_add_transaction():
     json = request.json
     transaction_keys = ["sender", "receiver", "amount", "change"]
 
@@ -35,6 +35,23 @@ def post_transaction():
     }
 
     return jsonify(response), 201
+
+@app.route('/mine-block', methods=['GET'])
+def handle_mine_block():
+    miner = request.remote_addr
+    mining_message, mining_result = blockchain.mine_block(miner)
+    latest_block = blockchain.get_latest_block()
+
+    response = {
+        "message": mining_message,
+    }
+
+    if mining_result is True:
+        response["block"] = latest_block.to_dict()
+        return jsonify(response), 200
+    else:
+        return jsonify(response), 400
+    
 
 if __name__ == '__main__':
     CORS(app)

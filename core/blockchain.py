@@ -12,7 +12,7 @@ class Transaction:
         self.content: str = self.to_string()
         
     def to_string(self) -> str:
-        return f'{self.receiver} -> {self.sender}: {self.amount}, change: {self.change}'
+        return f'{self.sender} -> {self.receiver}: {self.amount}, change: {self.change}'
 
 class Block:
     def __init__(self, transactions: list[Transaction] = []):
@@ -54,7 +54,7 @@ class Blockchain:
     def __init__(self):
         self.chain: list[Block] = []
         self.transactions_queue: list[Transaction] = []
-        self.block_capacity: int = 3
+        self.block_capacity: int = 5
 
         genesis_block = Block()
         genesis_block.hash = Block.compute_hash(genesis_block)
@@ -86,13 +86,17 @@ class Blockchain:
 
         self.chain.append(block)
      
-    def mine_block(self, miner: str) -> None:
+    def mine_block(self, miner: str) -> tuple[str, bool]:
+        if len(self.transactions_queue) < self.block_capacity - 1:
+            return "Not enough transactions to mine a block", False
+
         transactions: list[Transaction] = []
-        while len(transactions) < self.block_capacity - 1 and len(self.transactions_queue) > 0:
+        while len(transactions) < self.block_capacity - 1:
             transactions.append(self.transactions_queue.pop(0))
         transactions.append(Transaction("Owner", miner, 10)) # Reward
 
         self.add_block(transactions)
+        return "Mine successful", True
 
     def print(self):
         for block in self.chain: 
