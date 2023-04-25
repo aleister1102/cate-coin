@@ -1,6 +1,19 @@
 import json
+import hashlib
 from datetime import datetime
-from cryptography import hash, merkle_root
+from pymerkle import MerkleTree
+
+
+def hash(data) -> bytes:
+    data = data.encode('utf-8')
+    return hashlib.sha256(data).digest()
+
+
+def merkle_root(values: list[str]) -> str:
+    tree = MerkleTree()
+    for value in values:
+        tree.append_entry(value)
+    return tree.root.decode() if tree.root else ""
 
 
 class Transaction:
@@ -107,19 +120,14 @@ class Blockchain:
         block.index = len(self.chain)
 
         self.chain.append(block)
-        
 
-    def mine_block(self, miner: str) -> tuple[bool, str]:
-        if len(self.transactions_queue) < self.block_capacity - 1:
-            return False, "Not enough transactions to mine a block 🥲 (at least 4)"
-
+    def mine_block(self, miner: str) -> None:
         transactions: list[Transaction] = [
             Transaction("Owner", miner, self.get_current_reward())]  # rewarding for miner
-        while len(transactions) < self.block_capacity:
+        while len(transactions) < self.block_capacity and len(self.transactions_queue) > 0:
             transactions.append(self.transactions_queue.pop(0))
+            
         self.add_block(transactions)
-
-        return True, "Mine successfully 🤑"
 
     def print(self):
         for block in self.chain:
@@ -142,7 +150,7 @@ class Blockchain:
 
             if current_block.hash.startswith(current_block.target * "0") is False:
                 return False, "Hash does not meet the difficulty target"
-            
+
         return True, None
 
     def get_balance(self, person: str) -> int:

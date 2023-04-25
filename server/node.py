@@ -54,15 +54,14 @@ def handle_add_transactions() -> Response:
 @app.route('/mine-block', methods=['GET'])
 def handle_mine_block() -> Response:
     miner = request.remote_addr
-    mining_result, mining_message = blockchain.mine_block(miner)
+    blockchain.mine_block(f"Miner ({miner})")
 
-    response = {"message": mining_message}
+    response = {
+        "message": "Mining successfull 🤑",
+        "block": blockchain.get_latest_block().to_dict()
+    }
 
-    if mining_result is True:
-        response["block"] = blockchain.get_latest_block().to_dict()
-        return jsonify(response), 200
-    else:
-        return jsonify(response), 400
+    return jsonify(response), 200
 
 
 @app.route('/is-valid', methods=['GET'])
