@@ -4,6 +4,7 @@ import { IoLink } from 'react-icons/io5'
 
 export default function Blockchain({ blockchain }) {
 	const [chain, setChain] = useState()
+	
 
 	useEffect(() => {
 		setChain(blockchain.chain)

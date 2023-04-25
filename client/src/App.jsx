@@ -12,7 +12,7 @@ function App() {
 
 	return (
 		<Router>
-			<Header/>
+			<Header blockchain={blockchain}/>
             <Routes>    
                 <Route path="/" element={<Blockchain blockchain={blockchain}/>} />
                 <Route path='/add-transactions' element={<AddTransactionsForm/>} />

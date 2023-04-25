@@ -26,3 +26,7 @@ td {
 th {
 	@apply text-white;
 }
+
+.tooltip {
+	@apply absolute top-4 right-4 bg-violet-500 text-white p-4 rounded-xl font-bold;
+}

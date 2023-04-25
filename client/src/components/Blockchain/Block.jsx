@@ -12,7 +12,12 @@ export default function Block({ block }) {
 			<span className='font-medium'>
 				{capitalizeString(key.replace(/_/g, ' '))}
 			</span>
-			<span className='w-56 text-end truncate'>{value}</span>
+			<span
+				className={`w-56 text-end truncate ${
+					key == 'index' ? 'text-primary font-bold' : ''
+				}`}>
+				{value}
+			</span>
 		</li>
 	))
 
@@ -36,8 +41,14 @@ export default function Block({ block }) {
 				{transactionFields}
 			</ul>
 			<div className='w-full flex justify-between'>
-				<CopyButton text={properties.merkle_root} message ={'Copy merkle root'} />
-				<CopyButton text={properties.hash} message={'Copy hash'} />
+				<CopyButton
+					text={properties.merkle_root}
+					message={'Copy merkle root'}
+				/>
+				<CopyButton
+					text={properties.hash}
+					message={'Copy hash'}
+				/>
 			</div>
 		</div>
 	)
