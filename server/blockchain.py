@@ -35,9 +35,9 @@ class Block:
         dictionary = {
             "index": self.index,
             "previous_hash": self.previous_hash,
-            "timestamp": self.timestamp,
-            "nonce": self.nonce,
             "hash": self.hash,
+            "nonce": self.nonce,
+            "timestamp": self.timestamp,
             "transactions": [transaction.to_string() for transaction in self.transactions]
         }
         return dictionary
