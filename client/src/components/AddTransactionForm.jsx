@@ -62,8 +62,6 @@ export default function AddTransactionForm() {
 			}
 		} catch (error) {
 			console.error('Error:', error)
-			setToastMessage('An error occurred while adding the transaction 😔')
-			setShowToast(true)
 		}
 	}
 

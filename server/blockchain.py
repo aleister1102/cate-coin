@@ -24,7 +24,7 @@ class Block:
         self.previous_hash = ""
         self.merkle_root_hash = self.compute_merkle_root()  # compute once
         self.timestamp = str(datetime.now())
-        self.target = 4
+        self.target = 5
         self.nonce = 0
 
         # Identifiers
