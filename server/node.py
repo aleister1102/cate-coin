@@ -32,7 +32,7 @@ def handle_add_transactions() -> Response:
         return "No transactions found 😔", 400
     else:
         response = {
-            "message": f"{num_of_transactions} transactions will be added to the blockchain soon 😉"
+            "message": f"Your transaction will be added to the blockchain soon 😉"
         }
 
     for transaction in transactions:

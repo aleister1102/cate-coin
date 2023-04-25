@@ -1,5 +1,13 @@
+import { Link } from 'react-router-dom'
+
 export default function Header() {
-	const links = ['Home', 'Add transaction', 'Mine block']
+	const links = [
+        {text: 'Home', path: '/'}, 
+        {text: 'Transactions', path: 'transactions'},
+        {text: 'Add transaction', path: 'add-transaction'},
+        {text: 'Mine block', path: 'mine-block'}
+    ]
+    
 	return (
 		<div className='h-24 flex bg-primary shadow-md fixed w-full top-0'>
 			<img
@@ -8,11 +16,11 @@ export default function Header() {
 				className='h-full w-24'
 			/>
 			<ul className='h-full flex justify-start items-center gap-4 ml-4'>
-				{links.map((link, index) => (
+				{links.map(({text, path}, index) => (
 					<li
 						className='text-xl font-bold uppercase p-4 text-white'
 						key={index}>
-						<a href='#'>{link}</a>
+						<Link to={path}>{text}</Link>
 					</li>
 				))}
 			</ul>

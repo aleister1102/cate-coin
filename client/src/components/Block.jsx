@@ -1,9 +1,6 @@
 import CopyButton from './CopyButton'
 import classNames from 'classnames'
-import { IoLink } from 'react-icons/io5'
-
-const capitalizeString = (string) =>
-	string.charAt(0).toUpperCase() + string.slice(1)
+import { capitalizeString } from '../utils/utils'
 
 export default function Block({ block }) {
 	const { transactions, ...properties } = block
