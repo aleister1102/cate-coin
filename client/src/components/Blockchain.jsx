@@ -20,7 +20,7 @@ export default function Blockchain({ blockchain }) {
 		: []
 
 	return (
-		<ul className='flex flex-wrap justify-between items-center gap-x-2 gap-y-8 mt-32 px-16 w-full'>
+		<ul className='flex flex-wrap justify-center items-center mt-32 px-16 w-full gap-y-8'>
 			{blocks.map((block, index) => (
 				<li key={index}> {block} </li>
 			))}

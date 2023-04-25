@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 export default function Header() {
 	const links = [
         {text: 'Home', path: '/'}, 
-        {text: 'Transactions', path: 'transactions'},
-        {text: 'Add transaction', path: 'add-transaction'},
-        {text: 'Mine block', path: 'mine-block'}
+        {text: 'Transactions queue', path: '/transactions-queue'},
+        {text: 'Add transaction', path: '/add-transaction'},
+        {text: 'Mine block', path: '/mine-block'}
     ]
     
 	return (

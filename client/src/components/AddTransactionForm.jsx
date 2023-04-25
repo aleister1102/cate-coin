@@ -28,7 +28,7 @@ const initialFormData = {
 	change: 0,
 }
 
-export default function AddTransactionsForm() {
+export default function AddTransactionForm() {
 	const [formData, setFormData] = useState(initialFormData)
 	const [toastMessage, setToastMessage] = useState('')
 	const [showToast, setShowToast] = useState(false)
@@ -71,7 +71,7 @@ export default function AddTransactionsForm() {
 		<div className='flex justify-center items-center m-auto'>
 			<form
 				onSubmit={handleSubmit}
-				className='mt-32 p-4 rounded-xl shadow-md shadow-gray-300 w-1/3 flex flex-col items-center'>
+				className='mt-44 p-4 rounded-xl shadow-md shadow-gray-300 w-1/3 flex flex-col items-center'>
 				{controls.map(({ name, type }, index) => (
 					<div
 						key={index}

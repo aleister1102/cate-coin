@@ -26,7 +26,7 @@ export default function Block({ block }) {
 	))
 
 	return (
-		<div className='w-96 h-96 p-4 border-2 border-primary rounded-xl flex flex-col items-center justify-between shadow-sm shadow-gray-300'>
+		<div className='w-96 h-96 p-4 border-2 border-primary rounded-xl flex flex-col items-center justify-between shadow-sm shadow-gray-300 mx-4'>
 			<ul className='w-full'>{headerFields}</ul>
 			<ul
 				className={classNames('w-full', {
