@@ -37,7 +37,7 @@ class Block:
         self.previous_hash = ""
         self.merkle_root_hash = self.compute_merkle_root()  # compute once
         self.timestamp = str(datetime.now())
-        self.target = 5
+        self.difficulty = 0
         self.nonce = 0
 
         # Identifiers
@@ -50,6 +50,7 @@ class Block:
             "previous_hash": self.previous_hash,
             "merkle_root": self.merkle_root_hash,
             "timestamp": self.timestamp,
+            "difficulty": self.difficulty,
             "nonce": self.nonce,
             "hash": self.hash,
             "transactions": [transaction.to_string() for transaction in self.transactions]
@@ -77,6 +78,7 @@ class Blockchain:
         self.block_capacity = 5
 
         # Rewarding mechanism
+        self.difficulty = 5
         self.reward = 128
         self.interval = 60  # in seconds
         self.timestamp = datetime.now()
@@ -102,15 +104,26 @@ class Blockchain:
             reward = self.reward
 
         return int(reward)
+    
+    def get_current_difficulty(self) -> int:
+        duration = datetime.now() - self.timestamp
+        seconds = int(duration.total_seconds())
+        difficulty = self.difficulty + int(seconds / self.interval)
+
+        return difficulty
 
     def get_latest_block(self) -> Block:
         return self.chain[-1]
 
     def proof_of_work(self, block: Block) -> str:
+        self.difficulty = self.get_current_difficulty()
+        block.difficulty = self.difficulty
+
         hash = block.compute_hash()
-        while hash.startswith(block.target * "0") is False:
+        while hash.startswith(self.difficulty * "0") is False:
             block.nonce += 1
             hash = block.compute_hash()
+
         return hash
 
     def add_block(self, transactions: list[Transaction]) -> None:
@@ -148,7 +161,7 @@ class Blockchain:
             if current_block.hash != current_block.compute_hash():
                 return False, "Hash is not equal to the computed hash"
 
-            if current_block.hash.startswith(current_block.target * "0") is False:
+            if current_block.hash.startswith(current_block.difficulty * "0") is False:
                 return False, "Hash does not meet the difficulty target"
 
         return True, None
@@ -163,6 +176,7 @@ class Blockchain:
                     balance -= (transaction.amount - transaction.change)
                 if transaction.receiver == person:
                     balance += (transaction.amount - transaction.change)
+
         return balance
 
 
