@@ -35,7 +35,10 @@ export default function Block({ block }) {
 				})}>
 				{transactionFields}
 			</ul>
-			<CopyButton text={properties.hash} />
+			<div className='w-full flex justify-between'>
+				<CopyButton text={properties.merkle_root} message ={'Copy merkle root'} />
+				<CopyButton text={properties.hash} message={'Copy hash'} />
+			</div>
 		</div>
 	)
 }

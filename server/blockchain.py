@@ -35,9 +35,10 @@ class Block:
         dictionary = {
             "index": self.index,
             "previous_hash": self.previous_hash,
-            "hash": self.hash,
-            "nonce": self.nonce,
+            "merkle_root": self.merkle_root_hash,
             "timestamp": self.timestamp,
+            "nonce": self.nonce,
+            "hash": self.hash,
             "transactions": [transaction.to_string() for transaction in self.transactions]
         }
         return dictionary
@@ -110,7 +111,7 @@ class Blockchain:
 
     def mine_block(self, miner: str) -> tuple[bool, str]:
         if len(self.transactions_queue) < self.block_capacity - 1:
-            return False, "Not enough transactions to mine a block 🥲"
+            return False, "Not enough transactions to mine a block 🥲 (at least 4)"
 
         transactions: list[Transaction] = [
             Transaction("Owner", miner, self.get_current_reward())]  # rewarding for miner

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import classNames from 'classnames'
 
-export default function CopyButton({ text }) {
+export default function CopyButton({ text, message }) {
 	const [copied, setCopied] = useState(false)
 
 	const handleCopy = () => {
@@ -22,7 +22,7 @@ export default function CopyButton({ text }) {
 					{ 'bg-pink-600': copied },
 				)}
 				type='button'>
-				{copied ? 'Copied!' : 'Copy hash'}
+				{copied ? 'Copied!' : message}
 			</button>
 		</CopyToClipboard>
 	)
