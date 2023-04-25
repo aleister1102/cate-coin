@@ -27,13 +27,14 @@ class Block:
         self.target = 4
         self.nonce = 0
 
-        # Hash
+        # Identifiers
         self.hash = ""
+        self.index = 0
 
     def to_dict(self) -> dict:
         dictionary = {
+            "index": self.index,
             "previous_hash": self.previous_hash,
-            "merkle_root_hash": self.merkle_root_hash,
             "timestamp": self.timestamp,
             "nonce": self.nonce,
             "hash": self.hash,
@@ -102,8 +103,10 @@ class Blockchain:
         block = Block(transactions)
         block.previous_hash = self.get_latest_block().hash
         block.hash = self.proof_of_work(block)
+        block.index = len(self.chain)
 
         self.chain.append(block)
+        
 
     def mine_block(self, miner: str) -> tuple[bool, str]:
         if len(self.transactions_queue) < self.block_capacity - 1:
