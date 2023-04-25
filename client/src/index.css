@@ -1,0 +1,32 @@
+@import url(https://fonts.googleapis.com/css?family=Nunito:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	font-family: 'Nunito', sans-serif;
+}
+
+.btn {
+	@apply bg-primary rounded-xl p-3 hover:bg-pink-600 text-white mt-4 w-2/5;
+}
+
+.control-group {
+	.btn {
+		@apply w-full;
+	}
+}
+
+th,
+td {
+	@apply px-4 py-2 text-center;
+}
+
+th {
+	@apply text-white;
+}
+
+.tooltip {
+	@apply absolute top-4 right-4 bg-violet-500 text-white p-4 rounded-xl font-bold;
+}
