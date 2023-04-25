@@ -119,7 +119,7 @@ class Blockchain:
         block.difficulty = self.get_current_difficulty()
 
         hash = block.compute_hash()
-        while hash.startswith(self.difficulty * "0") is False:
+        while hash.startswith(block.difficulty * "0") is False:
             block.nonce += 1
             hash = block.compute_hash()
 
