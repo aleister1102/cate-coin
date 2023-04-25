@@ -18,9 +18,10 @@ export default function CopyButton({ text }) {
 			onCopy={handleCopy}>
 			<button
 				className={classNames(
-					'bg-primary hover:bg-blue-700 text-white font-bold py-1 px-4 rounded w-40',
-					{ 'bg-secondary': copied },
-				)}>
+					'bg-primary hover:bg-pink-600 text-white font-bold py-1 px-4 rounded w-40',
+					{ 'bg-pink-600': copied },
+				)}
+				type='button'>
 				{copied ? 'Copied!' : 'Copy hash'}
 			</button>
 		</CopyToClipboard>
