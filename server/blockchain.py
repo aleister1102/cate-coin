@@ -116,8 +116,7 @@ class Blockchain:
         return self.chain[-1]
 
     def proof_of_work(self, block: Block) -> str:
-        self.difficulty = self.get_current_difficulty()
-        block.difficulty = self.difficulty
+        block.difficulty = self.get_current_difficulty()
 
         hash = block.compute_hash()
         while hash.startswith(self.difficulty * "0") is False:

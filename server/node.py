@@ -17,7 +17,9 @@ def handle_get_chain() -> Response:
     response = {
         "chain": [block.to_dict() for block in blockchain.chain],
         "transactions_queue": [transaction.to_string() for transaction in blockchain.transactions_queue],
-        "length": len(blockchain.chain)
+        "length": len(blockchain.chain),
+        "difficulty": blockchain.get_current_difficulty(),
+        "reward": blockchain.get_current_reward(),
     }
     return jsonify(response), 200
 
