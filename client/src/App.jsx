@@ -1,9 +1,9 @@
 import useFetch from './hooks/useFetch'
 import Header from './components/Header'
-import Blockchain from './components/Blockchain'
-import AddTransactionsForm from './components/AddTransactionsForm'
-import MineBlock from './components/MineBlock'
-import TransactionsQueue from './components/TransactionsQueue'
+import Blockchain from './components/Blockchain/Blockchain'
+import AddTransactionsForm from './components/AddTransaction/AddTransactionsForm'
+import MineBlock from './components/MineBlock/MineBlock'
+import TransactionsQueue from './components/TransactionsQueue/TransactionsQueue'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 

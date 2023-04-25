@@ -1,6 +1,6 @@
 import CopyButton from './CopyButton'
 import classNames from 'classnames'
-import { capitalizeString } from '../utils/utils'
+import { capitalizeString } from '../../utils/utils'
 
 export default function Block({ block }) {
 	const { transactions, ...properties } = block

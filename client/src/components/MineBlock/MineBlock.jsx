@@ -1,17 +1,7 @@
 import React, { useState } from 'react'
-import ToastMessage from './ToastMessage'
-import Block from './Block'
-
-function LoadingGif() {
-	return (
-		<iframe
-			src='https://giphy.com/embed/Opgs8NUosTAnRSFYzc'
-			width='480'
-			height='480'
-			allowFullScreen
-			className='rounded-2xl giphy-embed'></iframe>
-	)
-}
+import ToastMessage from '../ToastMessage'
+import Block from '../Blockchain/Block'
+import { MiningGIF } from './MiningGIF'
 
 export default function MineBlock() {
 	const initialToastMessage = {
@@ -55,7 +45,7 @@ export default function MineBlock() {
 				className='bg-primary rounded-xl p-4 hover:bg-pink-600 text-white mt-4 text-xl uppercase font-bold mb-8'>
 				Mine new block
 			</button>
-			{isMining ? <LoadingGif /> : null}
+			{isMining ? <MiningGIF /> : null}
 			{toastMessage.show && (
 				<ToastMessage
 					message={toastMessage.message}
