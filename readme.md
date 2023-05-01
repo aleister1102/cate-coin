@@ -1,1 +1,2 @@
-﻿# Demo Ứng Dụng Bờ Lốc Chen 🪙🪙
+# Cate Coin
+A demo cryptocurrency inspired from Cate Coin
