@@ -1,7 +1,7 @@
 
 # Cate Coin 🪙
 
-The web-based cryptocurrency project, inspired by CateCoin, is a platform that allows users to securely trade and mine digital currencies through a user-friendly web interface.
+A web application that simulates the operation of cryptocurrencies, inspired by the CateCoin cryptocurrency. The application allows users to perform cryptocurrency transactions, view a list of pending transactions, and engage in mining blocks.
 
 
 ## Demo
