@@ -1,7 +1,7 @@
 import json
 import hashlib
 from datetime import datetime
-from pymerkle import MerkleTree
+from pymerkle import InmemoryTree as MerkleTree
 
 
 def hash(data) -> bytes:

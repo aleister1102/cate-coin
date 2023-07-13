@@ -6,6 +6,12 @@ A web application that simulates the operation of cryptocurrencies, inspired by 
 
 ## Demo
 
+### Image
+
+![Alt text](demo.png)
+
+### Video
+
 https://youtu.be/lSjETKQWRr0
 
 
@@ -72,10 +78,16 @@ Go to the `server` directory
 cd server
 ```
 
-Run `node.py`
+Install dependencies with `pip`
 
 ```bash
-python node.py
+pip install -r requirements.txt
+```
+
+Run `server.py`
+
+```bash
+python server.py
 ```
 
 ### Run the Front-End
